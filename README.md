@@ -11,13 +11,12 @@ HTML/CSS/JavaScript 프론트엔드와 Node.js/Express 백엔드로 만든 간�
 │   ├── index.html
 │   ├── style.css
 │   └── script.js
-├── vercel.json        # 메인 주소(/)를 public/index.html로 연결
 ├── .env               # OPENAI_API_KEY 저장 (GitHub에 올라가지 않음)
 └── package.json
 ```
 
 > `app.js`는 `export default app`으로 앱을 내보냅니다. Vercel은 이 파일을 Express 앱으로 자동 인식해 하나의 함수로 배포합니다.
-> 이때 `/` 요청도 Express로 가서 404가 나므로, `vercel.json`에서 `/`를 `/index.html`로 재작성합니다.
+> Vercel에서는 `/` 요청이 Express로 오기 때문에 `app.js`에서 `GET /`을 직접 처리해 `index.html`을 보내 줍니다.
 > 로컬에서만 `express.static`과 `app.listen`이 동작하고, Vercel(`VERCEL` 환경 변수가 있을 때)에서는 `public/` 폴더를 CDN이 직접 제공합니다.
 
 ## 로컬에서 실행하기

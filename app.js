@@ -4,8 +4,19 @@ import OpenAI from "openai";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const PUBLIC_DIR = path.join(__dirname, "public");
+
 const app = express();
 app.use(express.json({ limit: "1mb" }));
+
+// 메인 페이지. Vercel에서는 / 요청이 정적 파일 대신 이 앱으로 오므로 직접 처리한다.
+// 함수 번들에 index.html이 없으면 CDN이 제공하는 /index.html로 보낸다.
+app.get("/", (req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, "index.html"), (err) => {
+    if (err && !res.headersSent) res.redirect("/index.html");
+  });
+});
 
 const MODEL = "gpt-4o-mini";
 const MAX_HISTORY = 20; // 모델에 보낼 최근 대화 메시지 수
@@ -73,10 +84,9 @@ app.use((err, req, res, next) => {
 // 로컬 실행 시에만 정적 파일 제공 + 포트 열기.
 // Vercel에서는 public/ 폴더를 CDN이 제공하고, 이 앱은 default export로 함수가 된다.
 if (!process.env.VERCEL) {
-  const __dirname = path.dirname(fileURLToPath(import.meta.url));
   const PORT = process.env.PORT || 3000;
 
-  app.use(express.static(path.join(__dirname, "public")));
+  app.use(express.static(PUBLIC_DIR));
   app.listen(PORT, () => {
     console.log(`챗봇 서버 실행 중: http://localhost:${PORT}`);
   });
