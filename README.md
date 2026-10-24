@@ -6,17 +6,17 @@ HTML/CSS/JavaScript 프론트엔드와 Node.js/Express 백엔드로 만든 간�
 ## 폴더 구조
 
 ```
-├── api/index.js       # Vercel 서버리스 함수 진입점 (app.js를 내보냄)
-├── app.js             # Express 앱: POST /api/chat
-├── server.js          # 로컬 실행용 서버 (정적 파일 + API)
-├── public/            # 프론트엔드 (Vercel에서는 정적 파일로 제공)
+├── app.js             # Express 앱 (POST /api/chat). Vercel이 자동으로 인식하는 진입점
+├── public/            # 프론트엔드 (Vercel에서는 CDN이 정적 파일로 제공)
 │   ├── index.html
 │   ├── style.css
 │   └── script.js
-├── vercel.json        # /api/* 요청을 api/index.js로 연결
 ├── .env               # OPENAI_API_KEY 저장 (GitHub에 올라가지 않음)
 └── package.json
 ```
+
+> `app.js`는 `export default app`으로 앱을 내보냅니다. Vercel은 이 파일을 Express 앱으로 자동 인식해 하나의 함수로 배포하므로 `vercel.json`이 필요 없습니다.
+> 로컬에서만 `express.static`과 `app.listen`이 동작하고, Vercel(`VERCEL` 환경 변수가 있을 때)에서는 `public/` 폴더를 CDN이 직접 제공합니다.
 
 ## 로컬에서 실행하기
 
@@ -31,7 +31,7 @@ npm start                # http://localhost:3000
 1. 이 폴더를 GitHub 저장소에 올립니다. (`.env`는 `.gitignore`에 포함되어 올라가지 않습니다)
 2. [Vercel](https://vercel.com)에서 **Add New → Project**로 저장소를 가져옵니다.
 3. **Environment Variables**에 `OPENAI_API_KEY`를 추가합니다.
-4. **Deploy**를 누르면 끝!
+4. Framework Preset이 **Express**로 자동 선택되었는지 확인하고 **Deploy**를 누르면 끝!
 
 또는 CLI로: `npx vercel` → 대시보드에서 환경 변수 추가 → `npx vercel --prod`
 

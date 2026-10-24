@@ -1,6 +1,8 @@
 import "dotenv/config";
 import express from "express";
 import OpenAI from "openai";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const app = express();
 app.use(express.json({ limit: "1mb" }));
@@ -60,5 +62,24 @@ app.post("/api/chat", async (req, res) => {
 app.get("/api/health", (req, res) => {
   res.json({ ok: true });
 });
+
+// 잘못된 JSON 등 처리되지 않은 오류도 JSON으로 응답한다.
+app.use((err, req, res, next) => {
+  console.error("요청 처리 오류:", err);
+  const status = err.status || 500;
+  res.status(status).json({ error: status < 500 ? "잘못된 요청입니다." : "서버 오류가 발생했습니다." });
+});
+
+// 로컬 실행 시에만 정적 파일 제공 + 포트 열기.
+// Vercel에서는 public/ 폴더를 CDN이 제공하고, 이 앱은 default export로 함수가 된다.
+if (!process.env.VERCEL) {
+  const __dirname = path.dirname(fileURLToPath(import.meta.url));
+  const PORT = process.env.PORT || 3000;
+
+  app.use(express.static(path.join(__dirname, "public")));
+  app.listen(PORT, () => {
+    console.log(`챗봇 서버 실행 중: http://localhost:${PORT}`);
+  });
+}
 
 export default app;
