@@ -1,0 +1,8 @@
+node_modules
+
+# 환경 변수 (API 키) - 절대 GitHub에 올리지 않기
+.env
+.env.*
+
+.vercel
+.DS_Store
